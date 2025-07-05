@@ -1,0 +1,4 @@
+{
+  "python.formatting.provider": "black",
+  "editor.defaultFormatter": "ms-python.python"
+}

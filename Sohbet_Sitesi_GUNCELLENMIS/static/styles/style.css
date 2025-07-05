@@ -1,0 +1,677 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-image: url('/static/images/wallpaper-4k-heroscreen.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  margin: 0;
+  color: #f0f0f0;
+}
+
+
+hr {
+  margin: 20px 0;
+}
+
+#root {
+   background: linear-gradient(
+    135deg,
+    rgba(0, 31, 63, 0.9) 0%,     /* koyu gece mavisi */
+    rgba(63, 81, 181, 0.8) 50%,  /* morumsu mavi */
+    rgba(25, 25, 112, 0.9) 100%  /* midnight blue */
+  );
+  width: 100%;
+  height: 100vh;
+  max-width: 720px;
+  margin: 0 auto;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.6); /* derin gölge efekti */
+  border-radius: 16px;
+}
+
+#home-container {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+}
+
+#home-header {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #00ffcc;
+  text-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
+  animation: glow 2s ease-in-out infinite alternate;
+  
+}
+
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 10px #00ffcc;
+  }
+  to {
+    text-shadow: 0 0 20px #00ffcc, 0 0 30px #00ffcc;
+  }
+}
+
+
+#chat-widget-home {
+  padding: 30px;
+}
+
+#chat-widget-home input {
+  width: 100%;
+  max-width: 300px;
+  padding: 8px 10px;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  background-color: #e6f7e6; /* WhatsApp yeşil tonunda arka plan */
+}
+
+#chat-widget-home label {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #aeeeff;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+
+#chat-widget-home div {
+  margin-bottom: 20px;
+}
+
+#chat-widget-home button {
+  height: calc(1.1rem + 20px);
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+
+#name-input {
+  display: flex;
+  flex-direction: column;
+}
+
+#code-label {
+  display: block;
+}
+
+#join {
+  border: none;
+  background: linear-gradient(to right, #00c851, #007E33);
+  color: white;
+  box-shadow: 0 4px 14px rgba(0, 200, 81, 0.3);
+  transition: 0.3s ease;
+}
+
+#join:hover {
+  background: linear-gradient(to right, #007E33, #00c851);
+  color: white;
+}
+
+#create {
+  background: transparent;
+  color: #00c851;
+  border: 2px solid #00c851;
+  transition: 0.3s ease;
+}
+
+#create:hover {
+  background-color: #00c851;
+  color: white;
+}
+
+
+#error {
+  width: calc(100% - 60px);
+  margin: 0 auto;
+  padding: 10px;
+  background-color: #ffccd5;
+  color: red;
+  border-radius: 10px;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 0 8px rgba(255, 0, 0, 0.2);
+}
+
+
+#room-container {
+  height: 100%;
+  display: grid;
+  grid-template-rows: repeat(2, auto) 1fr;
+  padding: 0 30px;
+  padding-bottom: 30px;
+}
+
+#room-subsection {
+  margin-bottom: 20px;
+}
+
+#room-code-display {
+  color: #075E54; /* WhatsApp koyu yeşil */
+}
+
+#room-code-display span {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
+  color: #40B85D; /* WhatsApp'taki yeşil tonunda */
+  font-family: monospace;
+  padding: 8px 5px;
+}
+
+
+#leave-chat-btn {
+  background: linear-gradient(to right, #ff416c, #ff4b2b);
+  color: white;
+  font-weight: 800;
+  text-decoration: none;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 12px;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 12px rgba(255, 75, 43, 0.4);
+  z-index: 1000;
+  white-space: nowrap;
+  position: relative; /* eski absolute kaldırıldı */
+  right: unset;       /* sağa sabitleme kaldırıldı */
+  top: unset;
+}
+
+
+
+#leave-chat-btn:hover {
+  background: white;
+  color: #ff4b2b;
+  box-shadow: 0 0 16px rgba(255, 75, 43, 0.6);
+}
+
+
+#chat-room-widget {
+  height: 90%;
+  position: relative;
+  background-color: #e5ddd5; /* WhatsApp açık gri arka plan */
+  border: 4px solid #e5ddd5;
+  border-radius: 15px;
+}
+
+#msgs-container {
+  position: absolute;
+  height: calc(100% - 50px);
+  width: 100%;
+  overflow-y: auto;
+  background-color: #e5ddd5;
+  padding: 10px;
+  
+}
+
+#msgs-container > ul {
+  list-style: none;
+}
+
+#message-box {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 50px;
+  display: flex;
+}
+
+#message-input {
+  flex-grow: 1;
+  padding: 10px;
+  font-size: 1.1rem;
+  outline: none;
+  border: 4px solid #e5ddd5;
+  border-right: none;
+  background-color: white;
+  border-bottom-left-radius: 15px;
+}
+
+#send-btn {
+  padding: 0 20px;
+  font-size: 1.1rem;
+  border: 4px solid #e5ddd5;
+  border-left: none;
+  background-color: #25D366; /* WhatsApp yeşil rengi */
+  color: white;
+  cursor: pointer;
+  border-bottom-right-radius: 15px;
+  transition: all 0.1s ease-in;
+}
+
+#send-btn:hover {
+  background-color: #128C7E; /* WhatsApp koyu yeşil rengi */
+}
+
+.message-item {
+  background-color: rgba(0, 31, 63, 0.85); /* koyu mavi ama net */
+  color: #ffffff; /* bembeyaz metin */
+  font-family: 'Poppins', sans-serif; /* havalı font */
+  font-size: 0.95rem;
+  line-height: 1.4;
+  border-radius: 12px;
+  padding: 12px 16px;
+  width: fit-content;
+  max-width: 500px;
+  margin: 10px 0;
+  box-shadow: 0 0 12px rgba(0, 255, 204, 0.08);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+
+
+.peer-message-item {
+  background-color: #25D366; /* WhatsApp yeşil rengi */
+  color: white;
+  border-bottom-left-radius: 0;
+}
+
+.self-message-item {
+  margin-left: auto;
+  margin-right: 0;
+  border-bottom-right-radius: 0;
+}
+
+.muted-text {
+  color: grey;
+  font-size: 0.7rem;
+}
+
+.muted-text-white {
+  color: white;
+  font-size: 0.7rem;
+}
+
+.member-activity {
+  text-align: center;
+  margin: 10px 0;
+  color: grey;
+}
+
+.home-outer {
+  color:blue;	
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 90vh;
+}
+
+#home-container {
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  background: rgba(10, 25, 47, 0.8); /* lacivert saydam arka plan */
+  color: #f0f0f0; /* hafif kırık beyaz metin */
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4); /* hafif iç gölge */
+  backdrop-filter: blur(6px); /* cam efekti */
+  -webkit-backdrop-filter: blur(6px);
+  max-width: 360px;
+  width: 100%;
+
+}
+
+#chat-widget-home {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+#name-input, #code-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+#chat-widget-home input {
+  padding: 10px;
+  width: 220px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+#chat-widget-home button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  background-color: #4caf50;
+  color: white;
+  cursor: pointer;
+}
+
+#chat-widget-home button#join {
+  background-color: #4caf50;
+}
+
+#chat-widget-home button#create {
+  background-color: white;
+  border: 2px solid #4caf50;
+  color: #4caf50;
+}
+body {
+  background-image: url('/static/images/wallpaper-4k-heroscreen.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  margin: 0;
+  font-family: sans-serif;
+}
+
+#floating-participants-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 220px;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 20px;
+  color: #aeeeff;
+  font-family: 'Poppins', sans-serif;
+  z-index: 1000;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+#floating-participants-panel h3 {
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  text-align: center;
+  text-shadow: 0 0 5px rgba(0, 255, 204, 0.4);
+}
+
+#floating-participants-panel ul {
+  list-style: none;
+  padding-left: 0;
+  font-size: 0.95rem;
+}
+
+#floating-participants-panel li {
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  background-color: rgba(0, 255, 204, 0.08);
+  border-radius: 6px;
+  color: white;
+  box-shadow: 0 0 4px rgba(0, 255, 204, 0.08);
+}
+#voice-controls {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+#start-call-btn {
+  padding: 10px 18px;
+  font-size: 1rem;
+  border-radius: 8px;
+  background: linear-gradient(to right, #00c851, #007E33);
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 200, 81, 0.3);
+}
+
+#start-call-btn:hover {
+  background: linear-gradient(to right, #007E33, #00c851);
+}
+#voice-controls {
+  text-align: center;
+  margin: 20px 0;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+#voice-controls button {
+  padding: 10px 16px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s ease;
+}
+
+#start-call-btn {
+  background-color: #007E33;
+  color: white;
+}
+
+#toggle-mic-btn {
+  background-color: #ffbb33;
+  color: black;
+}
+
+#leave-call-btn {
+  background-color: #ff4444;
+  color: white;
+}
+
+.system-message {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  font-size: 0.9rem;
+  margin: 12px auto;
+  width: 100%;
+  opacity: 0.85;
+}
+
+.form-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 20px;
+}
+
+.form-box {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 30px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.2);
+  color: white;
+  font-family: 'Poppins', sans-serif;
+}
+
+.form-box h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #00ffcc;
+}
+
+.form-box label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #aeeeff;
+}
+
+.form-box input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 6px;
+  background: #f1f1f1;
+  font-size: 1rem;
+}
+
+.form-box button {
+  width: 100%;
+  background: linear-gradient(to right, #00c851, #007E33);
+  color: white;
+  padding: 10px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s ease;
+}
+
+.form-box button:hover {
+  background: linear-gradient(to right, #007E33, #00c851);
+}
+
+.form-footer {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.form-footer a {
+  color: #00ffcc;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.form-error {
+  background-color: rgba(255, 0, 0, 0.1);
+  border: 1px solid red;
+  padding: 10px;
+  border-radius: 6px;
+  color: #ff4d4d;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 15px;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+}
+
+.online-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: #00c851; /* yeşil */
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+#emoji-toggle {
+  background-color: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  margin: 0 6px;
+}
+#emoji-panel span {
+  font-size: 22px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+#header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+
+/* örnek: oda listesi kutusu daha yumuşak görünsün */
+.active-room-box {
+  background-color: rgba(255, 255, 255, 0.08);
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 600px) {
+  #home-container, #room-container {
+    padding: 10px !important;
+    grid-template-rows: auto auto 1fr;
+  }
+
+  #chat-room-widget {
+    height: 70vh;
+    flex-direction: column;
+  }
+
+  #message-box {
+    flex-direction: column;
+    height: auto;
+  }
+
+  #message-input {
+    width: 100%;
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+
+  #send-btn, #emoji-toggle {
+    width: 100%;
+    font-size: 1rem;
+    border-radius: 8px;
+  }
+
+  #start-call-btn {
+    width: 100%;
+    font-size: 1rem;
+    margin-top: 10px;
+  }
+
+  #msgs-container {
+    height: calc(100% - 120px);
+  }
+
+  .message-item {
+    max-width: 90vw;
+  }
+
+  #floating-participants-panel {
+    position: relative;
+    width: 100%;
+    height: auto;
+    margin-bottom: 15px;
+  }
+}
+
+@media (max-width: 600px) {
+  #voice-controls {
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    bottom: auto;
+    left: auto;
+    transform: none;
+    width: 100%;
+    margin-top: 15px;
+  }
+
+  #start-call-btn,
+  #toggle-mic-btn,
+  #leave-call-btn {
+    width: 90%;
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+}

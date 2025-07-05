@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- SABİT SOL PANEL -->
+<div id="floating-participants-panel">
+  <h3>👥 Katılımcılar</h3>
+  <ul id="user-list"></ul>
+</div>
+
+<div id="room-container">
+
+<div id="header-bar">
+  <h1 id="home-header">QUANTHEX 💬</h1>
+  <a href="/logout" id="leave-chat-btn"> Çıkış Yap</a>
+</div>
+
+<div id="room-subsection">
+  <h2 id="room-code-display">Oda Kodu: <span>{{room}}</span></h2>
+</div>
+
+
+  <div id="chat-room-widget">
+    <div id="msgs-container">
+      <ul id="messages"></ul>
+    </div>
+
+    <div id="message-box">
+  <input type="text" placeholder="Mesajınızı Giriniz" id="message-input" name="message" />
+  
+  <button type="button" id="emoji-toggle">😊</button>
+
+  <button type="submit" id="send-btn" onclick="sendMessage()">Gönder</button>
+
+  <div id="emoji-panel" style="display:none; position:absolute; bottom:60px; right:100px; background:white; padding:8px; border-radius:8px; box-shadow: 0 0 8px rgba(0,0,0,0.2); z-index:1000;">
+    <span onclick="insertEmoji('😀')">😀</span>
+    <span onclick="insertEmoji('😂')">😂</span>
+    <span onclick="insertEmoji('😍')">😍</span>
+    <span onclick="insertEmoji('👍')">👍</span>
+    <span onclick="insertEmoji('🎉')">🎉</span>
+    <span onclick="insertEmoji('❤️')">❤️</span>
+  </div>
+</div>
+
+  <!-- SESLİ GÖRÜŞME BUTONLARI -->
+  <div id="voice-controls">
+    <button id="start-call-btn">🔊 Sesli Sohbete Katıl</button>
+    <div id="call-buttons" style="display: none; gap: 10px; margin-top: 10px;">
+      <button id="toggle-mic-btn">🎤 Mikrofonu Kapat</button>
+      <button id="leave-call-btn">🔴 Sesli Sohbetten Ayrıl</button>
+    </div>
+  </div>
+
+  <!-- Karşı tarafın sesi -->
+  <audio id="remote-audio" autoplay></audio>
+
+  <script type="text/javascript">
+    var socketio = io();
+
+    socketio.emit("join-room", {
+      name: "{{user}}",
+      room: "{{room}}"
+    });
+
+  function sendMessage() {
+  const msgInput = document.getElementById("message-input");
+  const msg = msgInput.value.trim();
+  if (!msg) return;
+
+  const messageId = "msg-" + Date.now();
+  socketio.emit("message", { message: msg, id: messageId });
+
+  msgInput.value = "";
+}
+
+
+
+    socketio.on("message", function (message) {
+  createChatItem(message.message, message.sender, null, "sent", message.id);
+});
+
+    function createChatItem(message, sender, timestamp = null, status = "sent", messageId = null) {
+  var messages = document.getElementById("messages");
+  let timeText = timestamp || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  // 🔸 Sistem mesajı kontrolü: sender boşsa (örneğin katıldı/çıktı mesajı)
+  if (!sender || sender.trim() === "") {
+    const systemMessage = `
+      <li class="system-message" id="${messageId || ""}">
+        ${message}
+      </li>
+    `;
+    messages.innerHTML += systemMessage;
+    const container = document.getElementById("msgs-container");
+    container.scrollTop = container.scrollHeight;
+    return;
+  }
+
+  // 🔸 Normal mesajlar
+  let tickIcon = status === "read" ? '<span style="color: blue;">✔✔</span>' : (status === "delivered" ? "✔✔" : "✔");
+  var senderIsUser = "{{user}}" === sender;
+
+  const content = `
+    <li class="message-item ${senderIsUser ? "self-message-item" : "peer-message-item"}" id="${messageId || ""}">
+      <p><strong>${sender}</strong>: ${message}</p>
+      <div class="message-meta">
+        <small class="${senderIsUser ? "muted-text" : "muted-text-white"}">${timeText}</small>
+        ${senderIsUser ? `<span class="tick-status">${tickIcon}</span>` : ""}
+      </div>
+    </li>
+  `;
+
+  messages.innerHTML += content;
+  const container = document.getElementById("msgs-container");
+  container.scrollTop = container.scrollHeight;
+}
+
+    socketio.on("update-message-status", function (data) {
+      const el = document.getElementById(data.messageId);
+      if (el) {
+        const tickEl = el.querySelector(".tick-status");
+        if (tickEl) {
+          tickEl.innerHTML = data.status === "read" ? '<span style="color: blue;">✔✔</span>' : (data.status === "delivered" ? "✔✔" : "✔");
+        }
+      }
+    });
+
+   socketio.on("user-list", function (userList) {
+  const userListEl = document.getElementById("user-list");
+  userListEl.innerHTML = "";
+  userList.forEach(function (name) {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="online-dot"></span> ${name}`;
+    userListEl.appendChild(li);
+  });
+});
+
+
+    const startCallBtn = document.getElementById("start-call-btn");
+    const toggleBtn = document.getElementById("toggle-mic-btn");
+    const leaveBtn = document.getElementById("leave-call-btn");
+    const callButtons = document.getElementById("call-buttons");
+    const remoteAudio = document.getElementById("remote-audio");
+
+    let localStream;
+    let peerConnection;
+    let isMicMuted = false;
+    let hasJoinedVoice = false;
+
+    const config = {
+      iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+    };
+
+    startCallBtn.addEventListener("click", async () => {
+      try {
+        hasJoinedVoice = true;
+        startCallBtn.style.display = "none";
+        callButtons.style.display = "flex";
+
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        peerConnection = new RTCPeerConnection(config);
+
+        localStream.getTracks().forEach(track => {
+          peerConnection.addTrack(track, localStream);
+        });
+
+        peerConnection.ontrack = event => {
+          const [remoteStream] = event.streams;
+          if (!localStream || remoteStream.id !== localStream.id) {
+            remoteAudio.srcObject = remoteStream;
+          }
+        };
+
+        peerConnection.onicecandidate = event => {
+          if (event.candidate) {
+            socketio.emit("ice-candidate", {
+              candidate: event.candidate,
+              room: "{{ room }}"
+            });
+          }
+        };
+
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+
+        socketio.emit("voice-offer", {
+          offer: offer,
+          room: "{{ room }}"
+        });
+      } catch (err) {
+        alert("Mikrofon erişimi reddedildi!");
+        console.error(err);
+      }
+    });
+
+    socketio.on("voice-offer", async (data) => {
+      if (!hasJoinedVoice) return;
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        peerConnection = new RTCPeerConnection(config);
+
+        localStream.getTracks().forEach(track => {
+          peerConnection.addTrack(track, localStream);
+        });
+
+        peerConnection.ontrack = event => {
+          const [remoteStream] = event.streams;
+          if (!localStream || remoteStream.id !== localStream.id) {
+            remoteAudio.srcObject = remoteStream;
+          }
+        };
+
+        peerConnection.onicecandidate = event => {
+          if (event.candidate) {
+            socketio.emit("ice-candidate", {
+              candidate: event.candidate,
+              room: "{{ room }}"
+            });
+          }
+        };
+
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+
+        socketio.emit("voice-answer", {
+          answer: answer,
+          room: "{{ room }}"
+        });
+      } catch (err) {
+        console.error("Offer yanıtlanamadı:", err);
+      }
+    });
+
+    socketio.on("voice-answer", async (data) => {
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+    });
+
+    socketio.on("ice-candidate", async (data) => {
+      if (data.candidate) {
+        try {
+          await peerConnection.addIceCandidate(data.candidate);
+        } catch (err) {
+          console.error("ICE eklenemedi:", err);
+        }
+      }
+    });
+
+    toggleBtn.addEventListener("click", () => {
+      if (!localStream) return;
+      isMicMuted = !isMicMuted;
+      localStream.getAudioTracks()[0].enabled = !isMicMuted;
+      toggleBtn.textContent = isMicMuted ? "🎤 Mikrofonu Aç" : "🎤 Mikrofonu Kapat";
+      socketio.emit("voice-toggle");
+    });
+
+    leaveBtn.addEventListener("click", () => {
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+      }
+
+      socketio.emit("voice-stop");
+
+      peerConnection && peerConnection.close();
+      peerConnection = null;
+      localStream = null;
+
+      startCallBtn.style.display = "inline-block";
+      callButtons.style.display = "none";
+      toggleBtn.textContent = "🎤 Mikrofonu Kapat";
+      isMicMuted = false;
+      hasJoinedVoice = false;
+    });
+
+    {% for message in messages %}
+createChatItem("{{message.message}}", "{{message.sender}}", "{{message.timestamp}}", "sent", "{{message.id}}");
+socketio.emit("message-status-check", { messageId: "{{message.id}}" }); // 🔥 EKLENDİ
+{% endfor %}
+
+    document.getElementById("message-input").addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+
+    document.getElementById("emoji-toggle").addEventListener("click", function () {
+  const panel = document.getElementById("emoji-panel");
+  panel.style.display = panel.style.display === "none" ? "block" : "none";
+});
+
+function insertEmoji(emoji) {
+  const input = document.getElementById("message-input");
+  input.value += emoji;
+  input.focus();
+}
+
+  </script>
+{% endblock %}

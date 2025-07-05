@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-page">
+  <div class="form-box">
+    <h2>Kayıt Ol</h2>
+
+    {% if error %}
+    <div class="form-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+      <label for="username">Kullanıcı Adı</label>
+      <input type="text" id="username" name="username" placeholder="Kullanıcı adınızı girin" required />
+
+      <label for="password">Şifre</label>
+      <input type="password" id="password" name="password" placeholder="Şifrenizi girin" required />
+
+      <button type="submit">Kayıt Ol</button>
+    </form>
+
+    <p class="form-footer">Zaten hesabın var mı? <a href="{{ url_for('login') }}">Giriş Yap</a></p>
+  </div>
+</div>
+{% endblock %}

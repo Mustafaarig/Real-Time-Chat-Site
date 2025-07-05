@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="home-outer">
+  <div id="home-container">
+    <!-- Çıkış Butonu -->
+    <div style="position: absolute; top: 20px; right: 30px;">
+      <a href="/logout" style="
+          color: white;
+          background-color: #e74c3c;
+          padding: 8px 16px;
+          text-decoration: none;
+          border-radius: 8px;
+          box-shadow: 0 0 10px rgba(0,0,0,0.3);
+          font-weight: bold;
+        ">
+        Çıkış Yap
+      </a>
+    </div>
+
+    <h1 id="home-header">QUANTHEX</h1>
+
+    {% if error %}
+      <p id="error">{{ error }}</p>
+    {% endif %}
+
+    <form method="post" id="chat-widget-home">
+      <!-- Kullanıcı bilgisi (giriş yaptıysa) -->
+      <div id="name-input">
+        <label for="name">Kullanıcı İsmi</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="İsim"
+          value="{{ username }}"
+          readonly
+        />
+      </div>
+
+      <!-- Odaya giriş -->
+      <div id="code-input">
+        <label for="code" id="code-label">Oda Kodunu Girin</label>
+        <input
+          type="text"
+          id="code"
+          name="code"
+          placeholder="Oda Kodu"
+          value="{{ code }}"
+        />
+        <button type="submit" id="join" name="join" value="1">Giriş Yap</button>
+      </div>
+
+      <hr />
+
+      <!-- Oda oluştur -->
+      <button type="submit" id="create" name="create" value="1">Oda Kur</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
